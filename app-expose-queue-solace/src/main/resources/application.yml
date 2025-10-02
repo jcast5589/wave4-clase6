@@ -1,0 +1,33 @@
+spring:
+  cloud:
+    function:
+      definition: bussinessLogic
+    stream:
+      default-binder: local-solace
+      bindings:
+        bussinessLogic-in-0: 
+          destination: ${TOPIC_IN:general.alimentos.retail.guatemala.entrantes}
+          group: ${GROUP_IN:Alimentos}
+        bussinessLogic-out-0:
+          destination: ${TOPIC_OUT:general/alimentos/retail/guatemala/procesada}
+      binders:
+        local-solace:
+          type: solace
+          environment:
+            solace:
+              java:
+                host: ${SOLACE_HOST}
+                msgVpn: ${SOLACE_VPN}
+                clientUsername: ${SOLACE_USERNAME}
+                clientPassword: ${SOLACE_PASSWORD}
+                connectRetries: ${SOLACE_CONNECT_RETRIES:3}
+                connectRetriesPerHost: ${SOLACE_CONNECT_RETRIES_PER_HOST:0}
+                reconnectRetries: ${SOLACE_RECONNECT_RETRIES:3}
+      solace:
+        bindings:
+          bussinessLogic-in-0:
+            consumer:
+              queueAdditionalSubscriptions: ${TOPIC_SUB:general/alimentos/retail/guatemala/creada}
+
+server:
+  port: ${SERVER_PORT:8096}
